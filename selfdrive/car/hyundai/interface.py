@@ -14,6 +14,11 @@ ENABLE_BUTTONS = (Buttons.RES_ACCEL, Buttons.SET_DECEL, Buttons.CANCEL)
 
 
 class CarInterface(CarInterfaceBase):
+  def __init__(self, CP, CarController, CarState):
+    super().__init__(CP, CarController, CarState)
+    self.buttonEvents = []
+    self.cp2 = self.CS.get_can2_parser(CP)
+    
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
@@ -302,8 +307,9 @@ class CarInterface(CarInterfaceBase):
                                                                          tire_stiffness_factor=tire_stiffness_factor)
 
     ret.enableBsm = 0x58b in fingerprint[0]
-
-    if ret.openpilotLongitudinalControl:
+    
+    ret.sccBus = 2 if 1057 in fingerprint[2] else 0 if 1057 in fingerprint[0] else -1 
+    ret.openpilotLongitudinalControl = ret.sccBus == 2
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_HYUNDAI_LONG
 
     return ret
