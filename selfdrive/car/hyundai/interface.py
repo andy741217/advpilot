@@ -309,18 +309,14 @@ class CarInterface(CarInterfaceBase):
     ret.enableBsm = 0x58b in fingerprint[0]
     
     ret.sccBus = 2 if 1057 in fingerprint[2] else 0 if 1057 in fingerprint[0] else -1 
-    ret.openpilotLongitudinalControl = ret.sccBus == 2
+    if (ret.sccBus == 2):
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_HYUNDAI_LONG
 
     return ret
 
-  @staticmethod
-  def init(CP, logcan, sendcan):
-    if CP.openpilotLongitudinalControl:
-      disable_ecu(logcan, sendcan, addr=0x7d0, com_cont_req=b'\x28\x83\x01')
-
+  
   def _update(self, c):
-    ret = self.CS.update(self.cp, self.cp_cam)
+    ret = self.CS.update(self.cp, self.cp_cam, self.cp2)
     ret.cruiseState.enabled, ret.cruiseState.available = self.always_on(ret)
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
 
