@@ -73,10 +73,7 @@ class CarController:
 
     can_sends = []
 
-    # tester present - w/ no response (keeps radar disabled)
-    if self.CP.openpilotLongitudinalControl:
-      if self.frame % 100 == 0:
-        can_sends.append([0x7D0, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", 0])
+    
 
     if CC.latActive and abs(CS.out.steeringAngleDeg) > STEER_FAULT_MAX_ANGLE:
       self.angle_limit_counter += 1
